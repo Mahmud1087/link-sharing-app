@@ -144,7 +144,7 @@ const LoginForm = () => {
       <Button
         type='submit'
         disabled={isSubmitting}
-        btnClassName='bg-prim-default w-full text-white hover:bg-prim-light'
+        btnClassName='bg-prim-default w-full text-white btn-shadow hover:bg-prim-light'
       >
         Login
       </Button>

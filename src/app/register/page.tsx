@@ -7,7 +7,7 @@ const Register = () => {
       <div className='py-20 flex justify-center items-center'>
         <section className='w-full h-full flex flex-col items-center justify-center gap-[51px]'>
           <aside className='w-full flex justify-center'>
-            <Logo />
+            <Logo headerclassName='text-[2rem]' />
           </aside>
           <div className='p-10 rounded-xl bg-white flex flex-col justify-start w-[476px] mx-auto gap-10'>
             <article className='flex gap-2 self-stretch flex-col'>

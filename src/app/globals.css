@@ -6,3 +6,33 @@
 .label-shadow:focus-within {
   box-shadow: 0px 0px 32px 0px rgba(99, 60, 255, 0.25);
 }
+
+.inner-frame:before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -20px;
+  width: 20px;
+  height: 10px;
+  background: white;
+  border-top: 2px solid #737373;
+  border-right: 2px solid #737373;
+  border-top-right-radius: 30px;
+  box-shadow: 3px -3px 0 3px white;
+  z-index: 10;
+}
+
+.inner-frame:after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -20px;
+  width: 20px;
+  height: 10px;
+  background: white;
+  border-top: 2px solid #737373;
+  border-left: 2px solid #737373;
+  border-top-left-radius: 30px;
+  box-shadow: -3px -3px 0px 3px white;
+  z-index: 10;
+}

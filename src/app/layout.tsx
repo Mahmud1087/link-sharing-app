@@ -3,6 +3,7 @@ import { Instrument_Sans } from 'next/font/google';
 import './globals.css';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AppProvider } from '@/context/AppContext';
 
 const instrumentSans = Instrument_Sans({ subsets: ['latin'] });
 
@@ -18,10 +19,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${instrumentSans.className} bg-sec-lighter`}>
-        <ToastContainer autoClose={3000} />
-        {children}
-      </body>
+      <AppProvider>
+        <body className={`${instrumentSans.className} bg-sec-lighter`}>
+          <ToastContainer autoClose={3000} />
+          {children}
+        </body>
+      </AppProvider>
     </html>
   );
 }

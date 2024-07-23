@@ -1,14 +1,22 @@
+import { cn } from '@/utils/cn';
 import Image from 'next/image';
 import linkIcon from '~/public/linkIcon.svg';
 
-const Logo = () => {
+type LogoProperties = {
+  headerclassName: string;
+  imgClassName?: string;
+};
+
+const Logo = ({ headerclassName, imgClassName }: LogoProperties) => {
   return (
     <div className='flex items-center gap-2'>
-      <aside>
-        <Image src={linkIcon} alt='link icon' />
+      <aside className={cn(imgClassName)}>
+        <Image src={linkIcon} alt='link icon' className='w-full h-full' />
       </aside>
 
-      <h1 className='text-[2rem] font-bold text-dark-default'>devlinks</h1>
+      <h1 className={cn('font-bold text-dark-default', headerclassName)}>
+        devlinks
+      </h1>
     </div>
   );
 };

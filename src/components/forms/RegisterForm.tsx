@@ -191,8 +191,7 @@ const RegisterForm = () => {
       <Button
         type='submit'
         disabled={isSubmitting}
-        // handleClick={notify}
-        btnClassName='bg-prim-default w-full text-white hover:bg-prim-light'
+        btnClassName='bg-prim-default w-full text-white btn-shadow hover:bg-prim-light'
       >
         Login
       </Button>

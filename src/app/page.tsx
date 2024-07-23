@@ -11,7 +11,7 @@ const HomePage = () => {
   onAuthStateChanged(auth, (user) => {
     if (user) {
       const uid = user.uid;
-      router.push(`/dashboard/${uid}`);
+      router.push(`/dashboard`);
       // ...
     } else {
       // User is signed out

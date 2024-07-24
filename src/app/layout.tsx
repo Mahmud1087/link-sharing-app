@@ -19,12 +19,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <AppProvider>
-        <body className={`${instrumentSans.className} bg-sec-lighter`}>
-          <ToastContainer autoClose={3000} />
-          {children}
-        </body>
-      </AppProvider>
+      <body className={`${instrumentSans.className} bg-sec-lighter`}>
+        <ToastContainer autoClose={3000} />
+        <AppProvider>{children}</AppProvider>
+      </body>
     </html>
   );
 }

@@ -15,7 +15,7 @@ import { FirebaseError } from 'firebase/app';
 
 const LoginForm = () => {
   const successNotify = () =>
-    toast.success('Login successfully, redirecting...', {
+    toast.success('Login successfully', {
       position: 'top-center',
     });
 
@@ -42,9 +42,9 @@ const LoginForm = () => {
       const user = userCredentials.user;
       if (user) {
         successNotify();
-        setTimeout(() => {
-          router.push('/dashboard');
-        }, 4000);
+
+        router.push('/dashboard');
+
         reset();
       }
     } catch (error) {

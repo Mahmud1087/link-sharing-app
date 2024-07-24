@@ -8,17 +8,13 @@ import { LoaderCircle } from 'lucide-react';
 const HomePage = () => {
   const router = useRouter();
 
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      const uid = user.uid;
-      router.push(`/dashboard`);
-      // ...
-    } else {
-      // User is signed out
-      // ...
-      router.push('/login');
-    }
-  });
+  const user = auth.currentUser;
+  if (user) {
+    const uid = user.uid;
+    router.push(`/dashboard/${uid}`);
+  } else {
+    router.push('/login');
+  }
   return (
     <div className='h-screen w-screen flex flex-col justify-center items-center'>
       <LoaderCircle

@@ -28,7 +28,7 @@ type AppContextType = {
   setData: Dispatch<SetStateAction<DataType[]>>;
 };
 
-type Props = AppContextType & {
+type Props = {
   children: React.ReactNode;
 };
 

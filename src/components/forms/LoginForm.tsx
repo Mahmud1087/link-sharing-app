@@ -10,8 +10,9 @@ import { cn } from '@/utils/cn';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/firebase/config';
+import { auth, firestore } from '@/firebase/config';
 import { FirebaseError } from 'firebase/app';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const LoginForm = () => {
   const successNotify = () =>
@@ -41,8 +42,18 @@ const LoginForm = () => {
       );
       const user = userCredentials.user;
       if (user) {
+        const docRef = doc(firestore, 'users', user.uid);
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+          const linkObj = { link: '', provider: '' };
+          await setDoc(docRef, {
+            firstName: '',
+            lastName: '',
+            links: [{ ...linkObj }],
+            email: user.email,
+          });
+        }
         successNotify();
-
         router.push('/dashboard');
 
         reset();

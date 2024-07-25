@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 
 const RegisterForm = () => {
   const successNotify = () =>
-    toast.success('Account created successfully, redirecting...', {
+    toast.success('Account created successfully', {
       position: 'top-center',
     });
 
@@ -43,9 +43,7 @@ const RegisterForm = () => {
       const user = userCredentials.user;
       if (user) {
         successNotify();
-        setTimeout(() => {
-          router.push('/login');
-        }, 4000);
+        router.push('/login');
         reset();
       }
     } catch (error) {
@@ -193,7 +191,7 @@ const RegisterForm = () => {
         disabled={isSubmitting}
         btnClassName='bg-prim-default w-full text-white btn-shadow hover:bg-prim-light'
       >
-        Login
+        Create new account
       </Button>
 
       <div className='flex items-center justify-center gap-2 leading-6 text-center w-full'>

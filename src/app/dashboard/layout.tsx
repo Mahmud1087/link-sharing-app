@@ -1,7 +1,8 @@
 import Navbar from '@/components/dashboard/navbar/Navbar';
-import PhoneFrame from '@/components/dashboard/phone frame/PhoneFrame';
 import PhonePreview from '@/components/dashboard/phone frame/PhonePreview';
+import { auth, firestore } from '@/firebase/config';
 
+const user = auth.currentUser;
 export default function DashboardLayout({
   children,
 }: {

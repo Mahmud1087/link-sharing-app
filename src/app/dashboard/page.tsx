@@ -5,11 +5,42 @@ import Footer from '@/components/dashboard/Footer';
 import PageHeading from '@/components/dashboard/PageHeading';
 import AddNewLinkComponent from '@/components/dashboard/profile-page/AddNewLinkComponent';
 import { useAppContext } from '@/context/AppContext';
+import { auth, firestore } from '@/firebase/config';
+import { FirebaseError } from 'firebase/app';
+import { doc, getDoc } from 'firebase/firestore';
 import Image from 'next/image';
+import { useEffect } from 'react';
 import noLinkIcon from '~/public/no-link-icon.png';
 
 const DashboardLinks = () => {
-  const { data } = useAppContext();
+  const user = auth.currentUser;
+  const { data, setData } = useAppContext();
+
+  // const getData = async () => {
+  //   try {
+  //     if (user) {
+  //       const docRef = doc(firestore, 'users', user.uid);
+  //       const docSnap = await getDoc(docRef);
+  //       if (docSnap.exists()) {
+  //         console.log(docSnap.data());
+  //         // setData(docSnap.data());
+  //       } else {
+  //         console.log('No such document!');
+  //       }
+  //     } else {
+  //       console.log('No user signed in!');
+  //     }
+  //   } catch (error) {
+  //     if (error instanceof FirebaseError) {
+  //       console.log(error.message);
+  //     }
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   getData();
+  // }, []);
+
   return (
     <div className='flex flex-col h-full'>
       <section className='h-full p-10 flex flex-col gap-10'>

@@ -22,7 +22,6 @@ const ProfilePage = () => {
 
   const onSubmit = async (data: FieldValues) => {
     const user = auth.currentUser;
-    // Handle form submission
     if (user !== null) {
       updateProfile(user, {
         displayName: `${data.firstName} ${data.lastName}`,

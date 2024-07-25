@@ -6,15 +6,14 @@ import {
   Dispatch,
   SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 
 type DataType = {
-  id: string;
   link: string;
   provider: string;
-  color: string;
 };
 
 type AppContextType = {
@@ -40,8 +39,8 @@ const appContextDefaultValues: AppContextType = {
   setDisplayName: () => (user !== null ? user?.displayName : null),
   email: user !== null ? user?.email : null,
   setEmail: () => (user !== null ? user?.email : null),
-  data: [{ id: '', link: '', provider: '', color: '' }],
-  setData: () => [{ id: '', link: '', provider: '', color: '' }],
+  data: [{ link: '', provider: '' }],
+  setData: () => [{ link: '', provider: '' }],
 };
 
 const AppContext = createContext<AppContextType>(appContextDefaultValues);
@@ -57,17 +56,18 @@ export const AppProvider = ({ children }: Props) => {
   const [data, setData] = useState<DataType[]>([]);
 
   const getData = async () => {
-    const querySnapshot = await getDocs(collection(firestore, 'links'));
-    const linksData = querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      link: doc.data().link,
-      provider: doc.data().provider,
-      color: doc.data().color,
+    const querySnapshot = await getDocs(collection(firestore, 'users'));
+    const linksData = querySnapshot.docs.map((doc, i) => ({
+      link: doc.data().links[i].link,
+      provider: doc.data().links[i].provider,
     }));
     setData(linksData);
+    console.log(linksData);
   };
 
-  getData();
+  // useEffect(() => {
+  //   getData();
+  // }, []);
 
   return (
     <AppContext.Provider

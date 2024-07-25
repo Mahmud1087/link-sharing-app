@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={`${instrumentSans.className} bg-sec-lighter`}>
-        <ToastContainer autoClose={3000} />
+        <ToastContainer autoClose={1500} />
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

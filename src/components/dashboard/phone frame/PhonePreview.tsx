@@ -1,19 +1,12 @@
 'use client';
 
+import React from 'react';
 import { useAppContext } from '@/context/AppContext';
 import PhoneFrame from './PhoneFrame';
-import { auth, firestore } from '@/firebase/config';
-import { useEffect, useState } from 'react';
 import SingleLink from './SingleLink';
 
 const PhonePreview = () => {
-  const user = auth.currentUser;
-  const { email, data } = useAppContext();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const { email, data, displayName } = useAppContext();
 
   return (
     <div>
@@ -23,14 +16,14 @@ const PhonePreview = () => {
             <div className='flex flex-col gap-6 self-stretch items-center'>
               <div className='w-24 h-24 rounded-full bg-[#eee]'></div>
               <div className='flex flex-col items-center gap-3'>
-                {user?.displayName === '' ? (
+                {displayName === null ? (
                   <h1 className='w-40 h-4 rounded-full bg-[#eee]'></h1>
                 ) : (
                   <h1 className='text-[18px] font-semibold text-dark-default leading-[27px] capitalize'>
-                    {user?.displayName}
+                    {displayName}
                   </h1>
                 )}
-                {email === null || !isClient ? (
+                {email === null ? (
                   <p className='w-[4.5rem] h-2 rounded-full bg-[#eee]'></p>
                 ) : (
                   <p className='text-dark-light text-sm'>{email}</p>
@@ -41,16 +34,13 @@ const PhonePreview = () => {
           <section className='flex flex-col gap-5 w-full h-full'>
             {[1, 2, 3, 4, 5].map((item, i) => {
               return (
-                <>
+                <React.Fragment key={item}>
                   {data[i] ? (
                     <SingleLink {...data[i]} />
                   ) : (
-                    <div
-                      key={item}
-                      className='w-full rounded-lg bg-[#eee] h-11 self-stretch'
-                    ></div>
+                    <div className='w-full rounded-lg bg-[#eee] h-11 self-stretch'></div>
                   )}
-                </>
+                </React.Fragment>
               );
             })}
           </section>

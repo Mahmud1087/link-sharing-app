@@ -1,6 +1,8 @@
 'use client';
 
 import { auth, firestore } from '@/firebase/config';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import {
   createContext,
   Dispatch,
@@ -9,9 +11,9 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
 
 type DataType = {
+  id: number | string;
   link: string;
   provider: string;
 };
@@ -39,8 +41,8 @@ const appContextDefaultValues: AppContextType = {
   setDisplayName: () => (user !== null ? user?.displayName : null),
   email: user !== null ? user?.email : null,
   setEmail: () => (user !== null ? user?.email : null),
-  data: [{ link: '', provider: '' }],
-  setData: () => [{ link: '', provider: '' }],
+  data: [{ id: '', link: '', provider: '' }],
+  setData: () => [{ id: '', link: '', provider: '' }],
 };
 
 const AppContext = createContext<AppContextType>(appContextDefaultValues);
@@ -55,19 +57,39 @@ export const AppProvider = ({ children }: Props) => {
   const [email, setEmail] = useState(appContextDefaultValues.displayName);
   const [data, setData] = useState<DataType[]>([]);
 
-  const getData = async () => {
-    const querySnapshot = await getDocs(collection(firestore, 'users'));
-    const linksData = querySnapshot.docs.map((doc, i) => ({
-      link: doc.data().links[i].link,
-      provider: doc.data().links[i].provider,
-    }));
-    setData(linksData);
-    console.log(linksData);
-  };
+  // Function to get data from a Firestore document
+  async function getDataFromFirestore(
+    collectionName: string,
+    documentId: string
+  ) {
+    try {
+      const docRef = doc(firestore, collectionName, documentId);
+      const docSnap = await getDoc(docRef);
 
-  // useEffect(() => {
-  //   getData();
-  // }, []);
+      if (docSnap.exists()) {
+        return docSnap.data(); // Return the document data
+      } else {
+        return null; // Return null if the document doesn't exist
+      }
+    } catch (error) {
+      console.error('Error getting document:', error);
+      return null; // Return null if there's an error
+    }
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      getDataFromFirestore('users', user.uid).then((data) => {
+        if (data) {
+          setData(data.links);
+          setDisplayName(data.firstName + data.lastName);
+          setEmail(data.email);
+        } else {
+          console.log('no data found');
+        }
+      });
+    }
+  });
 
   return (
     <AppContext.Provider

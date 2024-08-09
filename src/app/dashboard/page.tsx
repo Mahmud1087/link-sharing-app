@@ -6,44 +6,153 @@ import PageHeading from '@/components/dashboard/PageHeading';
 import AddNewLinkComponent from '@/components/dashboard/profile-page/AddNewLinkComponent';
 import { useAppContext } from '@/context/AppContext';
 import { auth, firestore } from '@/firebase/config';
-import { FirebaseError } from 'firebase/app';
-import { doc, getDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import noLinkIcon from '~/public/no-link-icon.png';
+import { v4 as uuidv4 } from 'uuid';
+import { FieldValues, useForm } from 'react-hook-form';
+import { cn } from '@/utils/cn';
+
+// type DataType = {
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+//   links: { link: string; provider: string }[];
+// };
+
+// const onSubmit = async (data: FieldValues) => {
+//     onAuthStateChanged(auth, (user) => {
+//       if (user) {
+//         const docRef = doc(firestore, 'users', user.uid);
+
+//         // Update the document data
+//         updateDoc(docRef, {
+//           firstName: `${data.firstName} ${data.lastName}`,
+//           email: data.email,
+//         });
+//       }
+//     });
+
+//     //sleep for 1 sec
+//     await new Promise((resolve) => setTimeout(resolve, 1000));
+//     if (!isSubmitting) {
+//       setSave(true);
+//       setTimeout(() => {
+//         setSave(false);
+//       }, 4000);
+//     }
 
 const DashboardLinks = () => {
-  const user = auth.currentUser;
-  const { data, setData } = useAppContext();
+  const { data } = useAppContext();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting: submit },
+  } = useForm();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [scroll, setScroll] = useState(false);
 
-  // const getData = async () => {
-  //   try {
-  //     if (user) {
-  //       const docRef = doc(firestore, 'users', user.uid);
-  //       const docSnap = await getDoc(docRef);
-  //       if (docSnap.exists()) {
-  //         console.log(docSnap.data());
-  //         // setData(docSnap.data());
-  //       } else {
-  //         console.log('No such document!');
-  //       }
-  //     } else {
-  //       console.log('No user signed in!');
-  //     }
-  //   } catch (error) {
-  //     if (error instanceof FirebaseError) {
-  //       console.log(error.message);
-  //     }
-  //   }
-  // };
+  async function addLinkToFirestore(
+    userId: string,
+    newLink: { id: number | string; link: string; provider: string }
+  ) {
+    setIsSubmitting(true);
+    try {
+      const docRef = doc(firestore, 'users', userId);
+      const docSnap = await getDoc(docRef);
 
-  // useEffect(() => {
-  //   getData();
-  // }, []);
+      if (docSnap.exists()) {
+        const currentData = docSnap.data();
+        const currentLinks = currentData.links as {
+          id: number | string;
+          link: string;
+          provider: string;
+        }[];
+
+        if (currentLinks.length !== 5) {
+          currentLinks.push(newLink);
+          toast.success('New link added', {
+            position: 'top-center',
+          });
+        } else {
+          toast.error('You can only add 5 links', {
+            position: 'top-center',
+          });
+        }
+
+        await updateDoc(docRef, {
+          links: currentLinks,
+        });
+      }
+      setIsSubmitting(false);
+    } catch (error) {
+      setIsSubmitting(false);
+      console.error('Error updating document:', error);
+    }
+  }
+
+  const addLink = () => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        addLinkToFirestore(user.uid, {
+          id: uuidv4(),
+          link: '',
+          provider: 'Github',
+        });
+      }
+    });
+  };
+
+  const update = async (userId: string, data: FieldValues) => {
+    try {
+      const docRef = doc(firestore, 'users', userId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const currentData = docSnap.data();
+        const currentLinks = currentData.links as {
+          id: number | string;
+          link: string;
+          provider: string;
+        }[];
+
+        currentLinks.forEach((link, index) => {
+          link.link = data[`link ${index + 1}`];
+        });
+        console.log(currentLinks);
+
+        // Update the document data
+        updateDoc(docRef, {
+          links: currentLinks,
+        });
+      }
+    } catch (error) {
+      console.error('Error updating document', error);
+    }
+  };
+
+  const onSubmit = async (data: FieldValues) => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        update(user.uid, data);
+      }
+    });
+
+    // //sleep for 1 sec
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
+    // if (!isSubmitting) {
+    //   // setSave(true);
+    //   // setTimeout(() => {
+    //   //   setSave(false);
+    //   // }, 4000);
+    // }
+  };
 
   return (
     <div className='flex flex-col h-full'>
-      <section className='h-full p-10 flex flex-col gap-10'>
+      <section className='h-[750px] p-10 flex flex-col gap-10'>
         <PageHeading
           heading='Customize your links'
           subheading='Add/edit/remove links below and then share all your profiles with the
@@ -54,13 +163,15 @@ const DashboardLinks = () => {
           <Button
             btnClassName='w-full border border-prim-default bg-transparent text-prim-default font-bold hover:bg-sec-light'
             type='button'
+            onClick={addLink}
+            disabled={isSubmitting}
           >
             + Add new link
           </Button>
           {data.length === 0 ? (
             <section className='w-full h-full bg-sec-lighter rounded-xl flex flex-col items-center justify-center'>
               <div className='mb-10'>
-                <Image src={noLinkIcon} alt='No Link Icon' />
+                <Image src={noLinkIcon} priority={true} alt='No Link Icon' />
               </div>
               <div className='flex flex-col gap-6'>
                 <h1 className='text-center text-dark-default text-[2rem] font-bold leading-[48px]'>
@@ -74,11 +185,42 @@ const DashboardLinks = () => {
               </div>
             </section>
           ) : (
-            <AddNewLinkComponent />
+            <form
+              id='linkFormId'
+              onSubmit={handleSubmit(onSubmit)}
+              className={cn(
+                'flex flex-col gap-3 h-full overflow-y-auto transition-all mb-32',
+                {
+                  onscroll: scroll,
+                }
+              )}
+              onMouseEnter={() => setScroll(true)}
+              onMouseLeave={() => setScroll(false)}
+            >
+              {data.map((item, i) => {
+                return (
+                  <AddNewLinkComponent
+                    key={i}
+                    index={i + 1}
+                    {...item}
+                    errors={errors}
+                    register={register}
+                    name={`link ${i + 1}`}
+                  />
+                );
+              })}
+            </form>
           )}
         </aside>
       </section>
-      <Footer btnType='button' disabled={data.length === 0} />
+      <Footer
+        btnType='submit'
+        addClass={`bg-prim-default hover:bg-prim-light ${
+          data.length === 0 && 'disabled:cursor-not-allowed'
+        }`}
+        disabled={data.length === 0}
+        formID='linkFormId'
+      />
     </div>
   );
 };

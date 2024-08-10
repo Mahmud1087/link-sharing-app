@@ -40,7 +40,8 @@ const ProfilePage = () => {
 
         // Update the document data
         updateDoc(docRef, {
-          firstName: `${data.firstName} ${data.lastName}`,
+          firstName: data.firstName,
+          lastName: data.lastName,
           email: data.email,
         });
       }

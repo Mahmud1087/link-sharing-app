@@ -82,10 +82,8 @@ export const AppProvider = ({ children }: Props) => {
       getDataFromFirestore('users', user.uid).then((data) => {
         if (data) {
           setData(data.links);
-          setDisplayName(data.firstName + data.lastName);
+          setDisplayName(`${data.firstName} ${data.lastName}`);
           setEmail(data.email);
-        } else {
-          console.log('no data found');
         }
       });
     }

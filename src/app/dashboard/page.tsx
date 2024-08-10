@@ -6,7 +6,7 @@ import PageHeading from '@/components/dashboard/PageHeading';
 import AddNewLinkComponent from '@/components/dashboard/profile-page/AddNewLinkComponent';
 import { useAppContext } from '@/context/AppContext';
 import { auth, firestore } from '@/firebase/config';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import Image from 'next/image';
 import React, { useState } from 'react';
@@ -106,10 +106,11 @@ const DashboardLinks = () => {
     });
   };
 
-  const update = async (userId: string, data: FieldValues) => {
+  async function updateForm(userId: string, data: FieldValues) {
     try {
       const docRef = doc(firestore, 'users', userId);
       const docSnap = await getDoc(docRef);
+
       if (docSnap.exists()) {
         const currentData = docSnap.data();
         const currentLinks = currentData.links as {
@@ -118,27 +119,34 @@ const DashboardLinks = () => {
           provider: string;
         }[];
 
-        currentLinks.forEach((link, index) => {
-          link.link = data[`link ${index + 1}`];
-        });
-        console.log(currentLinks);
+        const newLinks = currentLinks.map((link, index) => ({
+          ...link,
+          link: data[`link ${index + 1}`],
+        }));
 
-        // Update the document data
-        updateDoc(docRef, {
-          links: currentLinks,
+        await updateDoc(docRef, {
+          links: newLinks,
         });
       }
     } catch (error) {
       console.error('Error updating document', error);
     }
-  };
+  }
 
   const onSubmit = async (data: FieldValues) => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        update(user.uid, data);
-      }
-    });
+    try {
+      const user: User = await new Promise((resolve, reject) => {
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            resolve(user);
+          } else {
+            reject(new Error('User not authenticated'));
+          }
+        });
+      });
+
+      await updateForm(user.uid, data);
+    } catch (error) {}
 
     // //sleep for 1 sec
     // await new Promise((resolve) => setTimeout(resolve, 1000));

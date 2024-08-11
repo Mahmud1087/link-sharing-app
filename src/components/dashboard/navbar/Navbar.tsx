@@ -6,12 +6,12 @@ import { CircleUserRound, Link } from 'lucide-react';
 const links = [
   {
     label: 'Links',
-    href: '/dashboard',
+    href: 'dashboard-links',
     icon: <Link width={17} strokeWidth={2.5} />,
   },
   {
     label: 'Profile Details',
-    href: '/dashboard/profile',
+    href: 'profile-page',
     icon: <CircleUserRound width={17} strokeWidth={2.5} />,
   },
 ];

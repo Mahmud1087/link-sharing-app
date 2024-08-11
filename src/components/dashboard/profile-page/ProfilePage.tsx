@@ -5,33 +5,19 @@ import PageHeading from '@/components/dashboard/PageHeading';
 import { cn } from '@/utils/cn';
 import { FieldValues, useForm } from 'react-hook-form';
 import { PiImageLight } from 'react-icons/pi';
-import { onAuthStateChanged, updateProfile } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { auth, firestore } from '@/firebase/config';
 import SaveSuccess from '@/components/dashboard/SaveSuccess';
 import { useAppContext } from '@/context/AppContext';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 
 const ProfilePage = () => {
-  const { setSave, setDisplayName, setEmail } = useAppContext();
+  const { setSave } = useAppContext();
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm();
-
-  // async function updateProfile(
-  //   collectionName: string,
-  //   documentId: string,
-  //   dataToUpdate: any
-  // ) {
-  //   try {
-  //     const docRef = doc(firestore, collectionName, documentId);
-  //     await updateDoc(docRef,dataToUpdate);
-
-  //   } catch (error) {
-  //     console.error('Error updating document:', error);
-  //   }
-  // }
 
   const onSubmit = async (data: FieldValues) => {
     onAuthStateChanged(auth, (user) => {
@@ -40,8 +26,7 @@ const ProfilePage = () => {
 
         // Update the document data
         updateDoc(docRef, {
-          firstName: data.firstName,
-          lastName: data.lastName,
+          fullName: `${data.firstName} ${data.lastName}`,
           email: data.email,
         });
       }
@@ -55,30 +40,7 @@ const ProfilePage = () => {
         setSave(false);
       }, 4000);
     }
-
-    // updateProfile(user, {
-    //   displayName: `${data.firstName} ${data.lastName}`,
-    // })
-    //   .then(() => {
-    //     setDisplayName(user.displayName);
-    //     setEmail(data.email);
-    //     getValues('firstName') !== '' &&
-    //       getValues('lastName') !== '' &&
-    //       setSave(true);
-    //     setTimeout(() => {
-    //       setSave(false);
-    //     }, 4000);
-    // getValues('email') === '' ? (getValues().email = user.email) : '';
-    //   })
-    //   .catch((error) => {
-    //     // An error occurred
-    //     console.error('Error updating user profile:', error);
-    //   });
   };
-  // });
-  //sleep for 1 sec
-  //   await new Promise((resolve) => setTimeout(resolve, 1000));
-  // };
 
   return (
     <div className='flex flex-col h-full relative'>
@@ -186,16 +148,11 @@ const ProfilePage = () => {
             >
               <p className='text-dark-light leading-6 w-60'>Email</p>
               <input
-                {...register('email', { required: "Can't be empty" })}
+                {...register('email')}
                 type='email'
                 placeholder='e.g. email@example.com'
                 className={cn(
-                  'w-3/5 px-4 py-3 rounded-lg bg-white border border-sec-default leading-6 text-dark-default placeholder:text-dark-default/50  focus:outline-none',
-                  {
-                    'focus:border-danger-default border-danger-default':
-                      errors.email,
-                    'focus:border-prim-default label-shadow': !errors.email,
-                  }
+                  'w-3/5 px-4 py-3 rounded-lg bg-white border border-sec-default leading-6 text-dark-default placeholder:text-dark-default/50  focus:outline-none focus:border-prim-default label-shadow'
                 )}
               />
             </label>

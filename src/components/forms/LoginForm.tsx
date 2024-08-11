@@ -13,7 +13,6 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, firestore } from '@/firebase/config';
 import { FirebaseError } from 'firebase/app';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { v4 as uuidv4 } from 'uuid';
 
 const LoginForm = () => {
   const successNotify = () =>
@@ -47,8 +46,7 @@ const LoginForm = () => {
         const docSnap = await getDoc(docRef);
         if (!docSnap.exists()) {
           await setDoc(docRef, {
-            firstName: '',
-            lastName: '',
+            fullName: '',
             links: [],
             email: '',
           });

@@ -6,24 +6,26 @@ type NavLinksProperties = {
 };
 
 import { usePathname } from 'next/navigation';
-import Link from 'next/link';
 import { cn } from '@/utils/cn';
+import { useAppContext } from '@/context/AppContext';
 
 const NavLinks = ({ href, children }: NavLinksProperties) => {
+  const { dashboardPage, setDashboardPage } = useAppContext();
   const pathname = usePathname();
 
   return (
-    <Link
+    <button
+      type='button'
       className={cn(
         'flex items-center gap-2 font-semibold py-3 px-7 rounded-lg text-dark-light transition-all leading-6 bg-transparent hover:text-prim-default',
         {
-          'bg-sec-light text-prim-default': pathname === href,
+          'bg-sec-light text-prim-default': href === dashboardPage,
         }
       )}
-      href={href}
+      onClick={() => setDashboardPage(href)}
     >
       {children}
-    </Link>
+    </button>
   );
 };
 export default NavLinks;

@@ -23,6 +23,8 @@ type AppContextType = {
   displayName: string;
   email: string;
   data: DataType[];
+  dashboardPage: string;
+  setDashboardPage: Dispatch<SetStateAction<string>>;
   setSave: Dispatch<SetStateAction<boolean>>;
   setDisplayName: Dispatch<SetStateAction<string>>;
   setEmail: Dispatch<SetStateAction<string>>;
@@ -35,12 +37,14 @@ type Props = {
 
 const appContextDefaultValues: AppContextType = {
   save: false,
-  setSave: () => false,
   displayName: '',
-  setDisplayName: () => '',
   email: '',
-  setEmail: () => '',
   data: [{ id: '', link: '', provider: '' }],
+  dashboardPage: '',
+  setDashboardPage: () => '',
+  setSave: () => false,
+  setDisplayName: () => '',
+  setEmail: () => '',
   setData: () => [{ id: '', link: '', provider: '' }],
 };
 
@@ -51,8 +55,9 @@ export const useAppContext = () => useContext(AppContext);
 export const AppProvider = ({ children }: Props) => {
   const [save, setSave] = useState(appContextDefaultValues.save);
   const [displayName, setDisplayName] = useState('');
-  const [email, setEmail] = useState(appContextDefaultValues.displayName);
+  const [email, setEmail] = useState('');
   const [data, setData] = useState<DataType[]>([]);
+  const [dashboardPage, setDashboardPage] = useState('dashboard-links');
 
   // Function to get data from a Firestore document
   async function getDataFromFirestore(
@@ -79,7 +84,7 @@ export const AppProvider = ({ children }: Props) => {
       getDataFromFirestore('users', user.uid).then((data) => {
         if (data) {
           setData(data.links);
-          setDisplayName(`${data.firstName} ${data.lastName}`);
+          setDisplayName(data.fullName);
           setEmail(data.email);
         }
       });
@@ -93,6 +98,8 @@ export const AppProvider = ({ children }: Props) => {
         displayName,
         email,
         data,
+        dashboardPage,
+        setDashboardPage,
         setData,
         setDisplayName,
         setSave,

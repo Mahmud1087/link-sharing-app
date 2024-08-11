@@ -16,12 +16,12 @@ const PhonePreview = () => {
             <div className='flex flex-col gap-6 self-stretch items-center'>
               <div className='w-24 h-24 rounded-full bg-[#eee]'></div>
               <div className='flex flex-col items-center gap-3'>
-                {displayName === '' ? (
-                  <h1 className='w-40 h-4 rounded-full bg-[#eee]'></h1>
-                ) : (
+                {displayName !== '' ? (
                   <h1 className='text-[18px] font-semibold text-dark-default leading-[27px] capitalize'>
                     {displayName}
                   </h1>
+                ) : (
+                  <h1 className='w-40 h-4 rounded-full bg-[#eee]'></h1>
                 )}
                 {email === '' ? (
                   <p className='w-[4.5rem] h-2 rounded-full bg-[#eee]'></p>

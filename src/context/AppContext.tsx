@@ -20,12 +20,12 @@ type DataType = {
 
 type AppContextType = {
   save: boolean;
-  displayName: string | null;
-  email: string | null;
+  displayName: string;
+  email: string;
   data: DataType[];
   setSave: Dispatch<SetStateAction<boolean>>;
-  setDisplayName: Dispatch<SetStateAction<string | null>>;
-  setEmail: Dispatch<SetStateAction<string | null>>;
+  setDisplayName: Dispatch<SetStateAction<string>>;
+  setEmail: Dispatch<SetStateAction<string>>;
   setData: Dispatch<SetStateAction<DataType[]>>;
 };
 
@@ -33,14 +33,13 @@ type Props = {
   children: React.ReactNode;
 };
 
-const user = auth.currentUser;
 const appContextDefaultValues: AppContextType = {
   save: false,
   setSave: () => false,
-  displayName: user !== null ? user?.displayName : null,
-  setDisplayName: () => (user !== null ? user?.displayName : null),
-  email: user !== null ? user?.email : null,
-  setEmail: () => (user !== null ? user?.email : null),
+  displayName: '',
+  setDisplayName: () => '',
+  email: '',
+  setEmail: () => '',
   data: [{ id: '', link: '', provider: '' }],
   setData: () => [{ id: '', link: '', provider: '' }],
 };
@@ -51,9 +50,7 @@ export const useAppContext = () => useContext(AppContext);
 
 export const AppProvider = ({ children }: Props) => {
   const [save, setSave] = useState(appContextDefaultValues.save);
-  const [displayName, setDisplayName] = useState(
-    appContextDefaultValues.displayName
-  );
+  const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState(appContextDefaultValues.displayName);
   const [data, setData] = useState<DataType[]>([]);
 
@@ -67,13 +64,13 @@ export const AppProvider = ({ children }: Props) => {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        return docSnap.data(); // Return the document data
+        return docSnap.data();
       } else {
-        return null; // Return null if the document doesn't exist
+        return null;
       }
     } catch (error) {
       console.error('Error getting document:', error);
-      return null; // Return null if there's an error
+      return null;
     }
   }
 

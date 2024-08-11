@@ -46,11 +46,10 @@ const LoginForm = () => {
         const docRef = doc(firestore, 'users', user.uid);
         const docSnap = await getDoc(docRef);
         if (!docSnap.exists()) {
-          const linkObj = { id: uuidv4(), link: '', provider: '' };
           await setDoc(docRef, {
             firstName: '',
             lastName: '',
-            links: [{ ...linkObj }],
+            links: [],
             email: '',
           });
         }
